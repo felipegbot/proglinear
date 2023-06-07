@@ -69,12 +69,12 @@ for i in range(n):
     horas_trabalhadas_diurno += y[i].primal
 print('\n')
 print("solucao otima", round(vobj()))
-print("horas trabalhadas durante o período diurno: ", round(horas_trabalhadas_diurno))
-print("horas trabalhadas durante o período noturno: ", round(horas_trabalhadas_noturno))
+print("horas trabalhadas durante o período diurno: ", horas_trabalhadas_diurno)
+print("horas trabalhadas durante o período noturno: ", (horas_trabalhadas_noturno))
 print("horas trabalhadas totais: ", round(sum(y[i].primal for i in range(n))))
 print('\n')
-print("valor do período diurno: ", round(horas_trabalhadas_diurno * 1))
-print("valor do período noturno: ", round(horas_trabalhadas_noturno * 1.2))
-print("valor total: ", round((horas_trabalhadas_diurno * 1) + (horas_trabalhadas_noturno * 1.2)))
+print("valor do período diurno: ", horas_trabalhadas_diurno * 1)
+print("valor do período noturno: ", round(horas_trabalhadas_noturno * 1.2, 1))
+print("valor total: ", (horas_trabalhadas_diurno * 1) + round(horas_trabalhadas_noturno * 1.2,1))
 print('\n')
 end() # finaliza o modelo
