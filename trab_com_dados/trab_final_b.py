@@ -1,15 +1,24 @@
 from pymprog import * # importando a biblioteca
+import sys
 
 # Dados de entrada
+Max = 0 # número máximo de entradas de funcionários
+M = [] # número mínimo de funcionários por hora (24 horas separados em 6 períodos)
 
-Min = [ # número mínimo de funcionários por hora (24 horas separados em 6 períodos)
-  20, 20, 20, 20,  # 0h-4h
-  30, 30, 30, 30,  # 4h-8h
-  50, 50, 50, 50,  # 8h-12h
-  45, 45, 45, 45,  # 12h-16h
-  60, 60, 60, 60,  # 16h-20h
-  40, 40, 40, 40,  # 20h-24h
-]
+# Abrindo o arquivo indicado
+with open(sys.argv[1], 'r') as f:
+  # Lendo o arquivo
+  data = f.readlines()
+
+  # Pegando o número máximo de entradas de funcionários
+  Max = int(data[0].strip())
+
+  # Preenchendo o vetor que contém o mínimo de funcionários por hora
+  for i in range(1,len(data)):
+    # Insere o mínimo de funcionários 4 vezes por período, pois o vetor foi separado em horas
+    for j in range(4):
+      M.append(int(data[i].strip()))
+  f.close()
 
 N = [ # fator multiplicativo do custo por hora a ser pago (24 horas)
   1.2, 1.2, 1.2, 1.2,   # 0h-4h
@@ -19,8 +28,6 @@ N = [ # fator multiplicativo do custo por hora a ser pago (24 horas)
   1, 1, 1, 1,           # 16h-20h
   1, 1, 1.2, 1.2,       # 20h-24h
 ]
-
-Max = 5 # número máximo de entradas de funcionários
 
 n = 24 # número de horas
 
@@ -43,30 +50,31 @@ minimize(
 # Restrições
 for i in range(n):
   # número de funcionários que estão trabalhando
-  y[i] == sum(x[a] for a in range(i-5,i))
+  y[i] == sum(x[a] for a in range(i-5,i+1))
 
   sum(e[i] for i in range(n)) <= Max # número máximo de entradas de funcionários (Max)
 
-  x[i] <= e[i] * (sum(Min[a % n] for a in range(i, i+5)))
+  x[i] <= e[i] * (sum(M[a % n] for a in range(i, i+6)))
 
   # número mínimo de funcionários
-  y[i] >= Min[i]
+  y[i] >= M[i]
 
 solve()
 
 for i in range(n):
   print("Hora %d: %d funcionários entraram e %d funcionários estão trabalhando" % (i, x[i].primal, y[i].primal))
-  if(i > 22 or i < 5):
+  if(i >= 22 or i < 5):
     horas_trabalhadas_noturno += y[i].primal
   else:
     horas_trabalhadas_diurno += y[i].primal
 print('\n')
-print("horas trabalhadas durante o período diurno: ", horas_trabalhadas_diurno)
-print("horas trabalhadas durante o período noturno: ", horas_trabalhadas_noturno)
-
+print("solucao otima", round(vobj()))
+print("horas trabalhadas durante o período diurno: ", round(horas_trabalhadas_diurno))
+print("horas trabalhadas durante o período noturno: ", round(horas_trabalhadas_noturno))
+print("horas trabalhadas totais: ", round(sum(y[i].primal for i in range(n))))
 print('\n')
-print("valor do período diurno: ", (horas_trabalhadas_diurno * 1))
-print("valor do período noturno: ", (horas_trabalhadas_noturno * 1.2))
+print("valor do período diurno: ", round(horas_trabalhadas_diurno * 1))
+print("valor do período noturno: ", round(horas_trabalhadas_noturno * 1.2))
+print("valor total: ", round((horas_trabalhadas_diurno * 1) + (horas_trabalhadas_noturno * 1.2)))
 print('\n')
-
 end() # finaliza o modelo

@@ -40,7 +40,7 @@ minimize(
 # Restrições
 for i in range(n):
   # número de funcionários que estão trabalhando
-  y[i] == sum(x[a] for a in range(i-5,i))
+  y[i] == sum(x[a] for a in range(i-5,i+1))
 
   # número mínimo de funcionários
   y[i] >= M[i]
