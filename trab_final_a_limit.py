@@ -1,7 +1,7 @@
 from pymprog import * # importando a biblioteca
 
 # Dados de entrada
-
+Max = 4 # número máximo de entradas de funcionários
 M = [ # número mínimo de funcionários por hora (24 horas separados em 6 períodos)
   20, 20, 20, 20,  # 0h-4h
   30, 30, 30, 30,  # 4h-8h
@@ -30,7 +30,7 @@ begin('trabalho final item a') # inicia o modelo
 # Variáveis de decisão
 y = var('y', n) # número de funcionários que estão trabalhando na hora i
 x = var('x', n) # número de funcionários que entraram na hora i
-
+e = var('e', n, bool) # variável de controle que diz se houve entrada de funcionários ou não na hora i
 
 # Função objetivo
 minimize(
@@ -41,6 +41,10 @@ minimize(
 for i in range(n):
   # número de funcionários que estão trabalhando
   y[i] == sum(x[a] for a in range(i-5,i+1))
+
+  sum(e[i] for i in range(n)) <= Max # número máximo de entradas de funcionários (Max)
+
+  x[i] <= e[i] * (sum(M[a % n] for a in range(i, i+6)))
 
   # número mínimo de funcionários
   y[i] >= M[i]
